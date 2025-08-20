@@ -1,152 +1,61 @@
 #!/usr/bin/env python3
 """
 CV Generator Script
-Converts cv-data.md to HTML with predefined styling
+Converts JSON Resume format to HTML with predefined styling
 """
 
+import json
 import re
 from pathlib import Path
 from typing import Dict
 
-def parse_cv_markdown(content: str) -> Dict:
-    """Parse the markdown CV data into structured data"""
-    sections = {}
-    current_section = None
-    current_subsection = None
-    lines = content.split('\n')
-    
-    i = 0
-    while i < len(lines):
-        line = lines[i].strip()
-        
-        # Skip title
-        if line.startswith('# CV Data'):
-            i += 1
-            continue
-            
-        # Main sections
-        if line.startswith('## '):
-            current_section = line[3:]
-            sections[current_section] = {}
-            if current_section == 'Personal Information':
-                # Parse personal info as key-value pairs
-                i += 1
-                while i < len(lines) and lines[i].strip():
-                    info_line = lines[i].strip()
-                    if info_line.startswith('- **'):
-                        match = re.match(r'- \*\*(.+?)\*\*: (.+)', info_line)
-                        if match:
-                            key, value = match.groups()
-                            sections[current_section][key] = value
-                    i += 1
-                continue
-            elif current_section in ['Experience', 'Education']:
-                sections[current_section]['entries'] = []
-        
-        # Subsections (### for job roles/education entries)
-        elif line.startswith('### '):
-            if current_section in ['Experience', 'Education']:
-                # Parse job/education entry
-                title_parts = line[4:].split(' | ')
-                company = title_parts[0]
-                role = title_parts[1] if len(title_parts) > 1 else ""
-                
-                entry = {
-                    'company': company,
-                    'role': role,
-                    'duration': '',
-                    'location': '',
-                    'description': '',
-                    'achievements': []
-                }
-                
-                # Look ahead for duration/location line
-                if i + 1 < len(lines):
-                    next_line = lines[i + 1].strip()
-                    if next_line.startswith('**Duration**'):
-                        duration_match = re.search(r'\*\*Duration\*\*: (.+)', next_line)
-                        if duration_match:
-                            entry['duration'] = duration_match.group(1)
-                        i += 1
-                        
-                        # Check for location
-                        if i + 1 < len(lines):
-                            loc_line = lines[i + 1].strip()
-                            if loc_line.startswith('**Location**'):
-                                loc_match = re.search(r'\*\*Location\*\*: (.+)', loc_line)
-                                if loc_match:
-                                    entry['location'] = loc_match.group(1)
-                                i += 1
-                
-                # Parse description and achievements
-                i += 1
-                while i < len(lines):
-                    desc_line = lines[i].strip()
-                    if not desc_line:
-                        i += 1
-                        continue
-                    if desc_line.startswith('### ') or desc_line.startswith('## '):
-                        i -= 1
-                        break
-                    if desc_line.startswith('**Notable projects') or desc_line.startswith('**Projects**'):
-                        # Skip the header, achievements follow
-                        i += 1
-                        continue
-                    if desc_line.startswith('- **'):
-                        entry['achievements'].append(desc_line[2:])
-                    elif not desc_line.startswith('**') and not entry['description']:
-                        entry['description'] = desc_line
-                    i += 1
-                
-                sections[current_section]['entries'].append(entry)
-                continue
-            
-        # Handle other subsections
-        elif line.startswith('### '):
-            current_subsection = line[4:]
-            if current_subsection not in sections[current_section]:
-                sections[current_section][current_subsection] = []
-        
-        # Parse content based on current section
-        elif line.startswith('- ') and current_section:
-            if current_subsection:
-                sections[current_section][current_subsection].append(line[2:])
-            elif current_section == 'Overview':
-                if 'lists' not in sections[current_section]:
-                    sections[current_section]['lists'] = {}
-                # Look for the preceding header
-                prev_line_idx = i - 1
-                while prev_line_idx >= 0 and not lines[prev_line_idx].strip():
-                    prev_line_idx -= 1
-                if prev_line_idx >= 0:
-                    prev_line = lines[prev_line_idx].strip()
-                    if prev_line.startswith('### '):
-                        list_name = prev_line[4:]
-                        if list_name not in sections[current_section]['lists']:
-                            sections[current_section]['lists'][list_name] = []
-                        sections[current_section]['lists'][list_name].append(line[2:])
-                        # Continue collecting items for this list
-                        j = i + 1
-                        while j < len(lines):
-                            next_line = lines[j].strip()
-                            if not next_line or not next_line.startswith('- '):
-                                break
-                            sections[current_section]['lists'][list_name].append(next_line[2:])
-                            j += 1
-                        i = j - 1  # Adjust i to account for consumed lines
-        
-        elif line and not line.startswith('#') and not line.startswith('**') and current_section == 'Overview':
-            if 'description' not in sections[current_section]:
-                sections[current_section]['description'] = line
-        
-        i += 1
-    
-    return sections
+def load_resume_data(file_path: Path) -> Dict:
+    """Load and parse JSON Resume data"""
+    with open(file_path, 'r', encoding='utf-8') as f:
+        return json.load(f)
 
-def generate_html(data: Dict) -> str:
-    """Generate HTML from parsed CV data"""
+def format_date_range(start_date: str, end_date: str = None) -> str:
+    """Format date range from JSON Resume format to display format"""
+    def format_date(date_str: str) -> str:
+        if date_str.lower() == 'present':
+            return 'PRESENT'
+        # Handle YYYY-MM format
+        if len(date_str) == 7 and '-' in date_str:
+            year, month = date_str.split('-')
+            month_abbrevs = {
+                '01': 'JAN', '02': 'FEB', '03': 'MAR', '04': 'APR',
+                '05': 'MAY', '06': 'JUN', '07': 'JUL', '08': 'AUG',
+                '09': 'SEP', '10': 'OCT', '11': 'NOV', '12': 'DEC'
+            }
+            return f"{month_abbrevs.get(month, month.upper())} {year}"
+        return date_str.upper()
     
-    # CSS styles (copied from original)
+    start_formatted = format_date(start_date)
+    end_formatted = format_date(end_date) if end_date else 'PRESENT'
+    
+    return f"{start_formatted} – {end_formatted}"
+
+def calculate_duration(start_date: str, end_date: str = None) -> str:
+    """Calculate duration between dates"""
+    # Simple duration calculation - could be enhanced
+    if end_date and end_date.lower() != 'present':
+        start_year = int(start_date.split('-')[0])
+        end_year = int(end_date.split('-')[0])
+        years = end_year - start_year
+        if years == 0:
+            return "1Y"
+        return f"{years}Y" if years < 2 else f"{years}Y"
+    
+    # For ongoing roles, calculate from start to 2023 (approximate)
+    start_year = int(start_date.split('-')[0])
+    current_year = 2023  # Could be made dynamic
+    years = current_year - start_year
+    return f"{years}Y" if years < 2 else f"{years}Y"
+
+def generate_html(resume_data: Dict) -> str:
+    """Generate HTML from JSON Resume data"""
+    
+    # CSS styles (same as before)
     css = """
   @import url(https://themes.googleusercontent.com/fonts/css?kit=xTOoZr6X-i3kNg7pYrzMsnEzyYBuwf3lO_Sc3Mw9RUVbV0WvE1cEyAoIq5yYZlSc);
   body { background:#fff; margin:0; font-family:"Lato", Arial, sans-serif; color:#000;}
@@ -172,12 +81,14 @@ def generate_html(data: Dict) -> str:
   .contact a:hover { text-decoration:underline; }
     """
     
+    basics = resume_data.get('basics', {})
+    
     html_parts = [
         '<!DOCTYPE html>',
         '<html>',
         '<head>',
         '  <meta charset="utf-8">',
-        f'  <title>{data["Personal Information"]["Name"]} — CV</title>',
+        f'  <title>{basics.get("name", "")} — CV</title>',
         '  <meta content="text/html; charset=UTF-8" http-equiv="content-type">',
         f'  <style type="text/css">{css}</style>',
         '</head>',
@@ -186,99 +97,124 @@ def generate_html(data: Dict) -> str:
     ]
     
     # Header section
-    personal = data.get('Personal Information', {})
     html_parts.extend([
         '    <div class="two-col">',
         '      <div>',
-        f'        <div class="title">{personal.get("Name", "")}</div>',
-        f'        <div class="subtitle">{personal.get("Title", "")}</div>',
+        f'        <div class="title">{basics.get("name", "")}</div>',
+        f'        <div class="subtitle">{basics.get("label", "")}</div>',
         '      </div>',
         '      <div class="contact small">',
-        f'        <p><span class="accent"><a href="mailto:{personal.get("Email", "")}">{personal.get("Email", "")}</a></span></p>',
-        f'        <p><span class="accent"><a href="{personal.get("GitHub", "")}">{personal.get("GitHub", "")}</a></span></p>' if personal.get("GitHub") else '',
+        f'        <p><span class="accent"><a href="mailto:{basics.get("email", "")}">{basics.get("email", "")}</a></span></p>'
+    ])
+    
+    # Add GitHub profile if available
+    github_profile = None
+    for profile in basics.get('profiles', []):
+        if profile.get('network', '').lower() == 'github':
+            github_profile = profile.get('url', '')
+            break
+    
+    if github_profile:
+        html_parts.append(f'        <p><span class="accent"><a href="{github_profile}">{github_profile}</a></span></p>')
+    
+    html_parts.extend([
         '      </div>',
         '    </div>'
     ])
     
     # Overview section
-    if 'Overview' in data:
-        overview = data['Overview']
+    if basics.get('summary'):
         html_parts.extend([
             '',
             '    <div class="section">',
             '      <h1>Overview</h1>',
-            f'      <p class="small">{overview.get("description", "")}</p>'
+            f'      <p class="small">{basics["summary"]}</p>'
         ])
         
-        # Add subsections from overview
-        if 'lists' in overview:
-            for list_name, items in overview['lists'].items():
-                html_parts.extend([
-                    '',
-                    f'      <h2 class="muted">{list_name}</h2>',
-                    '      <ul class="small">'
-                ])
-                for item in items:
-                    # Convert markdown bold to HTML
-                    item_html = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', item)
-                    html_parts.append(f'        <li>{item_html}</li>')
-                html_parts.append('      </ul>')
-                html_parts.append('')
-                html_parts.append('      <div class="hr"></div>')
+        # Add responsibilities (hardcoded for now, could be dynamic)
+        html_parts.extend([
+            '',
+            '      <h2 class="muted">Responsibilities</h2>',
+            '      <ul class="small">',
+            '        <li><strong>Data strategy</strong>: Tooling selection, data acquisition, delivery roadmaps & prioritisation.</li>',
+            '        <li><strong>Delivery</strong>: Scope & design, stakeholder co‑creation, hands‑on implementation, evaluation.</li>',
+            '        <li><strong>Operations</strong>: Team hiring & mentoring, vendor management, enabling self‑sufficient ops.</li>',
+            '      </ul>',
+            '',
+            '      <div class="hr"></div>'
+        ])
         
-        # Add technology pills - remove duplicate section
-        tech_items = overview.get('lists', {}).get('Key Technology Proficiencies', [])
-        if tech_items:
-            # Remove the duplicate list version first
-            if any('Key Technology Proficiencies' in str(part) for part in html_parts[-10:]):
-                # Find and remove the list version
-                for i in range(len(html_parts) - 1, max(0, len(html_parts) - 15), -1):
-                    if 'Key Technology Proficiencies' in str(html_parts[i]):
-                        # Remove from this point until next hr or end
-                        j = i
-                        while j < len(html_parts) and '<div class="hr"></div>' not in html_parts[j]:
-                            j += 1
-                        if j < len(html_parts):
-                            j += 1  # Include the hr
-                        html_parts = html_parts[:i] + html_parts[j:]
-                        break
+        # Add domain experience (hardcoded for now)
+        html_parts.extend([
+            '      <h2 class="muted">Domain Experience</h2>',
+            '      <ul class="small">',
+            '        <li>Healthcare & life sciences: clinical data, EHR/FHIR, women\'s health, R&D analytics.</li>',
+            '        <li>Pharmaceutical: manufacturing, clinical trial optimisation, field/sales effectiveness.</li>',
+            '        <li>Public sector: DWP, MoD, Home Office (digital transformation, fraud/error analytics).</li>',
+            '        <li>Finance & marketing analytics.</li>',
+            '      </ul>',
+            '',
+            '      <div class="hr"></div>'
+        ])
+        
+        # Skills section as pills
+        skills = resume_data.get('skills', [])
+        if skills:
+            # Flatten all skills into one list for pills
+            all_skills = []
+            for skill_group in skills:
+                all_skills.extend(skill_group.get('keywords', []))
             
             html_parts.extend([
-                '      <h2 class="muted">Key technology proficiencies</h2>',
+                '      <h2 class="muted">Key technology skills</h2>',
                 '      <div class="small">'
             ])
-            for tech in tech_items:
-                html_parts.append(f'        <span class="pill">{tech}</span>')
+            for skill in all_skills:
+                html_parts.append(f'        <span class="pill">{skill}</span>')
             html_parts.append('      </div>')
         
         html_parts.append('    </div>')
     
     # Experience section
-    if 'Experience' in data and 'entries' in data['Experience']:
+    work_experience = resume_data.get('work', [])
+    if work_experience:
         html_parts.extend([
             '',
             '    <div class="section">',
             '      <h1>Experience</h1>'
         ])
         
-        for entry in data['Experience']['entries']:
+        for job in work_experience:
+            company = job.get('name', '')
+            position = job.get('position', '')
+            start_date = job.get('startDate', '')
+            end_date = job.get('endDate', '')
+            location = job.get('location', '')
+            summary = job.get('summary', '')
+            highlights = job.get('highlights', [])
+            
+            # Format duration and dates
+            duration = calculate_duration(start_date, end_date)
+            date_range = format_date_range(start_date, end_date)
+            location_str = f", {location}" if location else ""
+            
             html_parts.extend([
                 '',
                 '      <div class="role">',
-                f'        <h2>{entry["company"]} / <span class="muted">{entry["role"]}</span></h2>',
-                f'        <h3>{entry["duration"]}{", " + entry["location"] if entry["location"] else ""}</h3>',
-                f'        <p class="small">{entry["description"]}</p>'
+                f'        <h2>{company} / <span class="muted">{position}</span></h2>',
+                f'        <h3>{duration}: {date_range}{location_str}</h3>',
+                f'        <p class="small">{summary}</p>'
             ])
             
-            if entry['achievements']:
+            if highlights:
                 html_parts.extend([
                     '        <h2 class="muted">Notable projects / achievements</h2>',
                     '        <ul class="small">'
                 ])
-                for achievement in entry['achievements']:
+                for highlight in highlights:
                     # Convert markdown bold to HTML
-                    achievement_html = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', achievement)
-                    html_parts.append(f'          <li>{achievement_html}</li>')
+                    highlight_html = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', highlight)
+                    html_parts.append(f'          <li>{highlight_html}</li>')
                 html_parts.append('        </ul>')
             
             html_parts.append('      </div>')
@@ -286,19 +222,33 @@ def generate_html(data: Dict) -> str:
         html_parts.append('    </div>')
     
     # Education section
-    if 'Education' in data and 'entries' in data['Education']:
+    education = resume_data.get('education', [])
+    if education:
         html_parts.extend([
             '',
             '    <div class="section">',
             '      <h1>Education</h1>'
         ])
         
-        for entry in data['Education']['entries']:
+        for edu in education:
+            institution = edu.get('institution', '')
+            area = edu.get('area', '')
+            study_type = edu.get('studyType', '')
+            start_date = edu.get('startDate', '')
+            end_date = edu.get('endDate', '')
+            location = edu.get('location', '')
+            summary = edu.get('summary', '')
+            
+            # Format dates
+            date_range = format_date_range(start_date, end_date)
+            location_str = f", {location}" if location else ""
+            degree_info = f"{area} {study_type}" if area and study_type else (area or study_type or '')
+            
             html_parts.extend([
                 '      <div class="role">',
-                f'        <h2>{entry["company"]} / <span class="muted">{entry["role"]}</span></h2>',
-                f'        <h3>{entry["duration"]}{", " + entry["location"] if entry["location"] else ""}</h3>',
-                f'        <p class="small">{entry["description"]}</p>',
+                f'        <h2>{institution} / <span class="muted">{degree_info}</span></h2>',
+                f'        <h3>{date_range}{location_str}</h3>',
+                f'        <p class="small">{summary}</p>',
                 '      </div>'
             ])
         
@@ -314,28 +264,25 @@ def generate_html(data: Dict) -> str:
     return '\n'.join(html_parts)
 
 def main():
-    """Main function to generate CV HTML from markdown"""
-    cv_data_path = Path('cv-data.md')
+    """Main function to generate CV HTML from JSON Resume"""
+    resume_path = Path('resume.json')
     output_path = Path('index.html')
     
-    if not cv_data_path.exists():
-        print(f"Error: {cv_data_path} not found")
+    if not resume_path.exists():
+        print(f"Error: {resume_path} not found")
         return
     
-    # Read and parse markdown
-    with open(cv_data_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-    
-    data = parse_cv_markdown(content)
+    # Load JSON Resume data
+    resume_data = load_resume_data(resume_path)
     
     # Generate HTML
-    html = generate_html(data)
+    html = generate_html(resume_data)
     
     # Write HTML file
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html)
     
-    print(f"✅ Generated {output_path} from {cv_data_path}")
+    print(f"✅ Generated {output_path} from {resume_path}")
 
 if __name__ == '__main__':
     main()

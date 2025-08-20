@@ -1,0 +1,155 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
+  "basics": {
+    "name": "Thomas Taylor‑Vigrass",
+    "label": "Director of Biomedical Data Engineering | ML/AI Data Architect",
+    "email": "tomvigrass@gmail.com",
+    "url": "https://github.com/tomvigrass",
+    "summary": "Senior data & ML engineering leader with a track record building large‑scale data platforms, AI/LLM systems, and healthcare analytics. Combines hands‑on engineering with strategic leadership to deliver secure, reliable, and observable data products in clinical and commercial settings.",
+    "profiles": [
+      {
+        "network": "GitHub",
+        "username": "tomvigrass",
+        "url": "https://github.com/tomvigrass"
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "Aneira Health (PHP)",
+      "position": "Director of Biomedical Data Engineering",
+      "startDate": "2023-03",
+      "endDate": "present",
+      "location": "London",
+      "summary": "Led data engineering x AI/ML strategy for a women's health startup. Owned the technical vision for secure, scalable data infrastructure and the integration of advanced AI systems into patient‑facing analytics products.",
+      "highlights": [
+        "**LLM/agentic systems**: Designed and delivered a LangGraph powered LLM architecture for patient‑facing chat, with traceability, token/cost tracking, guardrails, and rapid iteration loops.",
+        "**Data pipelines on GCP**: Built real‑time and batch pipelines across Cloud Run, Pub/Sub, BigQuery and Vertex AI to power low‑latency predictions and analytics.",
+        "**Observability**: Implemented OpenTelemetry multi‑exporter tracing (Google Cloud, Langfuse, Logfire), unifying logs, metrics, and LLM evaluations for production readiness.",
+        "**Healthcare interoperability**: Integrated with FHIR stores and designed feature ingestion patterns that support downstream ML and agentic workflows.",
+        "**Multimodal data integration**: Engineered pipelines unifying unstructured health data, tabular clinical records, and genomic datasets where relevant—supporting robust AI‑driven insights without over‑reliance on any single modality.",
+        "**Leadership**: Built and mentored a cross‑functional team of ML practitioners; set technical standards and an iterative roadmap aligned to product goals."
+      ]
+    },
+    {
+      "name": "QuantumBlack (McKinsey)",
+      "position": "Principal Data Engineer",
+      "startDate": "2017-11",
+      "endDate": "2023-03",
+      "location": "London",
+      "summary": "EMEA Data Engineering leadership. Managing cross-discipline teams to deliver advanced analytics projects. Closely involved in e2e delivery from ideation to design, hands on implementation, management of technical teams, stakeholder & change management, and evaluation of outcomes.",
+      "highlights": [
+        "Led delivery of a large‑scale pipeline and analytics application across ~100 datasets in 12 countries, serving recommendations to 300+ field users through a production web UI.",
+        "Recovered and re‑scoped a delayed programme to a successful, productionised launch to a tightened timeline.",
+        "Designed a WHO pipeline to standardise complex COVID‑era reporting into qualified KPIs with data contracts and cataloguing for ad‑hoc sources."
+      ]
+    },
+    {
+      "name": "PwC",
+      "position": "Manager",
+      "startDate": "2015-07",
+      "endDate": "2017-11",
+      "summary": "Forensic Technical Solutions: managed delivery of bespoke analytics across fraud detection and unstructured search/visualisation products; combined client delivery with business development.",
+      "highlights": [
+        "Fraud analytics toolkit: entity matching, anomaly detection, ML‑based risk scoring.",
+        "Investigation support tool: fast search and relationship discovery across large unstructured datasets.",
+        "Bespoke scrapers & pipelines normalising heterogeneous sources to common models."
+      ]
+    },
+    {
+      "name": "BAE Systems Applied Intelligence (Detica)",
+      "position": "Senior Consultant",
+      "startDate": "2014-05",
+      "endDate": "2015-07",
+      "location": "London",
+      "summary": "Public sector analytics integrating siloed data, tackling data quality, and detecting fraud/error patterns.",
+      "highlights": [
+        "DQ KPI scoring for Home Office advance flight manifests supporting entity screening.",
+        "Ingest & analytics for DWP: on‑prem HDP data lake, relational/graph queries for Universal Credit fraud/error."
+      ]
+    },
+    {
+      "name": "Forward3D",
+      "position": "Analyst",
+      "startDate": "2013-02",
+      "endDate": "2014-05",
+      "location": "London",
+      "summary": "Built and optimised online marketing campaigns using ML (e.g., multi‑armed bandits) and scripting (Python / JavaScript / Google Apps Script)."
+    },
+    {
+      "name": "Warwick University",
+      "position": "Research",
+      "startDate": "2011-09",
+      "endDate": "2013-02",
+      "location": "Warwick",
+      "summary": "Research into gene regulatory networks (bioinformatics & lab work). Analytics in Python/R/Matlab."
+    },
+    {
+      "name": "Warwick University",
+      "position": "Tutoring & lecturing",
+      "startDate": "2011-09",
+      "endDate": "2013-02",
+      "location": "Warwick",
+      "summary": "Delivered lectures and hands‑on bioinformatics training to cohorts of 10–150+ students."
+    }
+  ],
+  "education": [
+    {
+      "institution": "Warwick University",
+      "area": "Systems Biology",
+      "studyType": "MSc (Hons)",
+      "startDate": "2010-09",
+      "endDate": "2011-09",
+      "location": "Warwick",
+      "summary": "Six months taught modules (statistics, image analysis, life sciences) followed by two research projects in statistical modelling of gene regulatory networks."
+    },
+    {
+      "institution": "Warwick University",
+      "area": "Life Sciences",
+      "studyType": "BSc (2:1)",
+      "startDate": "2007-09",
+      "endDate": "2010-06",
+      "location": "Warwick",
+      "summary": "Thesis: satellite imaging of the Bay of Bengal to characterise algal bloom dynamics and cyclone correlations."
+    }
+  ],
+  "skills": [
+    {
+      "name": "Programming Languages",
+      "keywords": ["Python", "SQL", "PySpark"]
+    },
+    {
+      "name": "ML & AI Systems",
+      "keywords": ["ML systems", "LLM integration", "LLMOps", "LangChain", "LangGraph", "Langfuse"]
+    },
+    {
+      "name": "Cloud & Infrastructure",
+      "keywords": ["GCP", "Cloud Run", "Pub/Sub", "BigQuery", "Vertex AI", "AWS", "Azure", "Databricks"]
+    },
+    {
+      "name": "Observability & Monitoring",
+      "keywords": ["OpenTelemetry", "structured logging", "Logfire"]
+    },
+    {
+      "name": "Data Engineering",
+      "keywords": ["Distributed computing", "Data platforms", "Data privacy", "Data governance"]
+    },
+    {
+      "name": "Healthcare & Life Sciences",
+      "keywords": ["Multimodal healthcare data integration", "Clinical data", "EHR/FHIR", "Genomics", "Unstructured clinical data"]
+    }
+  ],
+  "publications": [
+    {
+      "name": "Reasoning Over Pre-training: Evaluating LLM Performance and Augmentation in Women's Health",
+      "publisher": "medRxiv",
+      "releaseDate": "2025-05-23",
+      "url": "https://www.medrxiv.org/content/10.1101/2025.05.22.25328162v1"
+    }
+  ],
+  "meta": {
+    "canonical": "https://raw.githubusercontent.com/jsonresume/resume-schema/master/resume.json",
+    "version": "v1.0.0",
+    "lastModified": "2025-08-20T00:00:00.000Z"
+  }
+}

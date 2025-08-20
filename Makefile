@@ -21,11 +21,11 @@ install:
 		echo "✅ uv installed successfully"; \
 	fi
 
-# Generate CV HTML from markdown
+# Generate CV HTML from JSON Resume
 generate: install
 	@echo "🔍 Checking file dependencies..."
-	@if [ ! -f "cv-data.md" ]; then \
-		echo "❌ cv-data.md not found"; \
+	@if [ ! -f "resume.json" ]; then \
+		echo "❌ resume.json not found"; \
 		exit 1; \
 	fi
 	@if [ ! -f "generate_cv.py" ]; then \
@@ -33,6 +33,6 @@ generate: install
 		exit 1; \
 	fi
 	@echo "✅ All dependencies found"
-	@echo "🚀 Generating CV HTML..."
+	@echo "🚀 Generating CV HTML from JSON Resume..."
 	@uv run python generate_cv.py
 	@echo "✅ CV generation complete!"
