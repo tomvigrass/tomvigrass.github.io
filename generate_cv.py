@@ -37,20 +37,36 @@ def format_date_range(start_date: str, end_date: str = None) -> str:
 
 def calculate_duration(start_date: str, end_date: str = None) -> str:
     """Calculate duration between dates"""
-    # Simple duration calculation - could be enhanced
-    if end_date and end_date.lower() != 'present':
-        start_year = int(start_date.split('-')[0])
-        end_year = int(end_date.split('-')[0])
-        years = end_year - start_year
-        if years == 0:
-            return "1Y"
-        return f"{years}Y" if years < 2 else f"{years}Y"
+    from datetime import datetime
     
-    # For ongoing roles, calculate from start to 2023 (approximate)
-    start_year = int(start_date.split('-')[0])
-    current_year = 2023  # Could be made dynamic
-    years = current_year - start_year
-    return f"{years}Y" if years < 2 else f"{years}Y"
+    # Parse start date
+    start_parts = start_date.split('-')
+    start_year = int(start_parts[0])
+    start_month = int(start_parts[1]) if len(start_parts) > 1 else 1
+    
+    # Determine end date
+    if end_date and end_date.lower() != 'present':
+        end_parts = end_date.split('-')
+        end_year = int(end_parts[0])
+        end_month = int(end_parts[1]) if len(end_parts) > 1 else 12
+    else:
+        # Use current date
+        now = datetime.now()
+        end_year = now.year
+        end_month = now.month
+    
+    # Calculate total months
+    total_months = (end_year - start_year) * 12 + (end_month - start_month)
+    
+    if total_months < 12:
+        return f"{total_months}M"
+    else:
+        years = total_months // 12
+        remaining_months = total_months % 12
+        if remaining_months == 0:
+            return f"{years}Y"
+        else:
+            return f"{years}Y {remaining_months}M"
 
 def generate_html(resume_data: Dict) -> str:
     """Generate HTML from JSON Resume data"""
@@ -77,6 +93,8 @@ def generate_html(resume_data: Dict) -> str:
   .role { margin-bottom:14pt; }
   .role h2 { font-size:12pt; font-family:"Raleway"; }
   .pill { display:inline-block; border:1px solid rgba(0,0,0,.18); border-radius:12px; padding:3px 8px; margin:3px 6px 0 0; font-size:10pt;}
+  .skill-group-title { font-size:10pt; font-weight:600; color:#333; margin:8pt 0 4pt 0; }
+  .skill-group { margin-bottom:8pt; }
   .contact a { color:inherit; text-decoration:none; }
   .contact a:hover { text-decoration:underline; }
     """
@@ -157,21 +175,23 @@ def generate_html(resume_data: Dict) -> str:
             '      <div class="hr"></div>'
         ])
         
-        # Skills section as pills
+        # Skills section as grouped pills
         skills = resume_data.get('skills', [])
         if skills:
-            # Flatten all skills into one list for pills
-            all_skills = []
-            for skill_group in skills:
-                all_skills.extend(skill_group.get('keywords', []))
+            html_parts.append('      <h2 class="muted">Key technology skills</h2>')
             
-            html_parts.extend([
-                '      <h2 class="muted">Key technology skills</h2>',
-                '      <div class="small">'
-            ])
-            for skill in all_skills:
-                html_parts.append(f'        <span class="pill">{skill}</span>')
-            html_parts.append('      </div>')
+            for skill_group in skills:
+                group_name = skill_group.get('name', '')
+                keywords = skill_group.get('keywords', [])
+                
+                if group_name and keywords:
+                    html_parts.extend([
+                        f'      <h3 class="skill-group-title">{group_name}</h3>',
+                        '      <div class="skill-group small">'
+                    ])
+                    for skill in keywords:
+                        html_parts.append(f'        <span class="pill">{skill}</span>')
+                    html_parts.append('      </div>')
         
         html_parts.append('    </div>')
     

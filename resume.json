@@ -18,7 +18,7 @@
     {
       "name": "Aneira Health (PHP)",
       "position": "Director of Biomedical Data Engineering",
-      "startDate": "2023-03",
+      "startDate": "2025-01",
       "endDate": "present",
       "location": "London",
       "summary": "Led data engineering x AI/ML strategy for a women's health startup. Owned the technical vision for secure, scalable data infrastructure and the integration of advanced AI systems into patient‑facing analytics products.",
@@ -35,7 +35,7 @@
       "name": "QuantumBlack (McKinsey)",
       "position": "Principal Data Engineer",
       "startDate": "2017-11",
-      "endDate": "2023-03",
+      "endDate": "2024-12",
       "location": "London",
       "summary": "EMEA Data Engineering leadership. Managing cross-discipline teams to deliver advanced analytics projects. Closely involved in e2e delivery from ideation to design, hands on implementation, management of technical teams, stakeholder & change management, and evaluation of outcomes.",
       "highlights": [
@@ -49,6 +49,7 @@
       "position": "Manager",
       "startDate": "2015-07",
       "endDate": "2017-11",
+      "location": "London",
       "summary": "Forensic Technical Solutions: managed delivery of bespoke analytics across fraud detection and unstructured search/visualisation products; combined client delivery with business development.",
       "highlights": [
         "Fraud analytics toolkit: entity matching, anomaly detection, ML‑based risk scoring.",
@@ -120,11 +121,11 @@
     },
     {
       "name": "ML & AI Systems",
-      "keywords": ["ML systems", "LLM integration", "LLMOps", "LangChain", "LangGraph", "Langfuse"]
+      "keywords": ["Logfire", "LangChain", "LangGraph", "Langfuse"]
     },
     {
       "name": "Cloud & Infrastructure",
-      "keywords": ["GCP", "Cloud Run", "Pub/Sub", "BigQuery", "Vertex AI", "AWS", "Azure", "Databricks"]
+      "keywords": ["GCP", "Cloud Run", "BigQuery", "Vertex AI", "AWS", "Azure", "Databricks"]
     },
     {
       "name": "Observability & Monitoring",
@@ -132,7 +133,7 @@
     },
     {
       "name": "Data Engineering",
-      "keywords": ["Distributed computing", "Data platforms", "Data privacy", "Data governance"]
+      "keywords": ["Distributed computing", "Data platforms", "Data privacy", "Data governance", "Dagster", "DBT"]
     },
     {
       "name": "Healthcare & Life Sciences",
