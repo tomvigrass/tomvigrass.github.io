@@ -228,7 +228,7 @@ def generate_html(resume_data: Dict) -> str:
             
             if highlights:
                 html_parts.extend([
-                    '        <h2 class="muted">Notable projects / achievements</h2>',
+                    '        <h2 class="muted">Highlights</h2>',
                     '        <ul class="small">'
                 ])
                 for highlight in highlights:
@@ -271,6 +271,58 @@ def generate_html(resume_data: Dict) -> str:
                 f'        <p class="small">{summary}</p>',
                 '      </div>'
             ])
+        
+        html_parts.append('    </div>')
+    
+    # Publications section
+    publications = resume_data.get('publications', [])
+    if publications:
+        html_parts.extend([
+            '',
+            '    <div class="section">',
+            '      <h1>Publications</h1>'
+        ])
+        
+        for pub in publications:
+            name = pub.get('name', '')
+            publisher = pub.get('publisher', '')
+            release_date = pub.get('releaseDate', '')
+            url = pub.get('url', '')
+            
+            # Format the date (assuming YYYY-MM-DD format)
+            formatted_date = ''
+            if release_date:
+                try:
+                    # Parse the date and format it
+                    if '-' in release_date:
+                        date_parts = release_date.split('-')
+                        if len(date_parts) >= 2:
+                            year = date_parts[0]
+                            month = date_parts[1]
+                            month_abbrevs = {
+                                '01': 'JAN', '02': 'FEB', '03': 'MAR', '04': 'APR',
+                                '05': 'MAY', '06': 'JUN', '07': 'JUL', '08': 'AUG',
+                                '09': 'SEP', '10': 'OCT', '11': 'NOV', '12': 'DEC'
+                            }
+                            formatted_date = f"{month_abbrevs.get(month, month.upper())} {year}"
+                        else:
+                            formatted_date = release_date
+                    else:
+                        formatted_date = release_date
+                except:
+                    formatted_date = release_date
+            
+            # Build the publication entry
+            html_parts.extend([
+                '      <div class="role">',
+                f'        <h2>{name}</h2>',
+                f'        <h3>{publisher}' + (f', {formatted_date}' if formatted_date else '') + '</h3>'
+            ])
+            
+            if url:
+                html_parts.append(f'        <p class="small"><span class="accent"><a href="{url}">{url}</a></span></p>')
+            
+            html_parts.append('      </div>')
         
         html_parts.append('    </div>')
     
