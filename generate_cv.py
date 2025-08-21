@@ -237,7 +237,14 @@ def generate_html(resume_data: Dict) -> str:
                     html_parts.append(f'          <li>{highlight_html}</li>')
                 html_parts.append('        </ul>')
             
-            html_parts.append('      </div>')
+            html_parts.extend([
+                '      </div>',
+                '      <div class="hr"></div>'
+            ])
+        
+        # Remove the last hr element (we don't want it after the final experience item)
+        if html_parts[-1] == '      <div class="hr"></div>':
+            html_parts.pop()
         
         html_parts.append('    </div>')
     
@@ -269,8 +276,13 @@ def generate_html(resume_data: Dict) -> str:
                 f'        <h2>{institution} / <span class="muted">{degree_info}</span></h2>',
                 f'        <h3>{date_range}{location_str}</h3>',
                 f'        <p class="small">{summary}</p>',
-                '      </div>'
+                '      </div>',
+                '      <div class="hr"></div>'
             ])
+        
+        # Remove the last hr element (we don't want it after the final education item)
+        if html_parts[-1] == '      <div class="hr"></div>':
+            html_parts.pop()
         
         html_parts.append('    </div>')
     
@@ -322,7 +334,14 @@ def generate_html(resume_data: Dict) -> str:
             if url:
                 html_parts.append(f'        <p class="small"><span class="accent"><a href="{url}">{url}</a></span></p>')
             
-            html_parts.append('      </div>')
+            html_parts.extend([
+                '      </div>',
+                '      <div class="hr"></div>'
+            ])
+        
+        # Remove the last hr element (we don't want it after the final publication item)
+        if html_parts[-1] == '      <div class="hr"></div>':
+            html_parts.pop()
         
         html_parts.append('    </div>')
     

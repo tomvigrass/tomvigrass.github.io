@@ -121,7 +121,7 @@
     },
     {
       "name": "ML & AI Systems",
-      "keywords": ["Logfire", "LangChain", "LangGraph", "Langfuse"]
+      "keywords": ["Logfire", "LangChain", "LangGraph"]
     },
     {
       "name": "Cloud Infrastructure & Tools",
@@ -129,7 +129,7 @@
     },
     {
       "name": "Observability & Monitoring",
-      "keywords": ["OpenTelemetry", "structured logging", "Logfire"]
+      "keywords": ["OpenTelemetry", "Logfire", "Langfuse", "Grafana"]
     },
     {
       "name": "Healthcare & Life Sciences",
